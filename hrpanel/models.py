@@ -1,5 +1,6 @@
 
 
+from email.policy import default
 from django.db import models
 from adminpanel.models import *
 
@@ -11,6 +12,9 @@ class Interview(models.Model):
     position = models.ForeignKey(Position, on_delete=models.PROTECT)
     datetime = models.DateTimeField(auto_now_add=False, auto_now=False)
     interviewers = models.ManyToManyField(User)
+    is_delete = models.BooleanField(default=False)
+
+    
 
 
 class Meeting(models.Model):

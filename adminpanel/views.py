@@ -2,12 +2,32 @@ from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from .serializers import *
+from rest_framework.permissions import IsAuthenticated , IsAdminUser, BasePermission
+
+class AccessHrAndAdmin(BasePermission):
+    def has_permission(self, request, view):
+        now_user = request.user
+        user = User.objects.get(username=now_user)
+        
+        if user.domain.name == "HR" or user.is_staff:
+            return True
+
+        
+
+        
+
 
 
 # Create your views here.
+
 class users_api(APIView):
+    permission_classes = [AccessHrAndAdmin]
+
+    
+
     def get(self, request):
-        users = User.objects.all()
+        
+        users = User.objects.filter(is_delete=False)
         serializer = UserSerializer(users, many=True)
 
         return Response({
@@ -18,8 +38,15 @@ class users_api(APIView):
 
     def post(self, request):
         data = request.data 
-        print(data)
-        serializer = UserSerializer(data = data)
+        user = request.user
+
+        context = {
+            "user": user
+        }
+
+
+        
+        serializer = UserSerializer(data = data, context = context)
         if serializer.is_valid():
             serializer.save()
             return Response({
@@ -37,7 +64,8 @@ class users_api(APIView):
     def delete(self, request):
         data = request.data
         obj = User.objects.get(id=data.get('id'))
-        obj.delete()
+        obj.is_delete = True
+        obj.save()
         return Response({
             "message": "data succssfully deleted"
         })
