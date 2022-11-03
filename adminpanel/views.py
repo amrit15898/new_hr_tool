@@ -1,3 +1,4 @@
+
 from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -7,18 +8,24 @@ from rest_framework.permissions import IsAuthenticated , IsAdminUser, BasePermis
 class AccessHrAndAdmin(BasePermission):
     def has_permission(self, request, view):
         now_user = request.user
-        user = User.objects.get(username=now_user)
+        # print(now_user.domain)
+        try:
+            user = User.objects.get(username=now_user)
+        except Exception as e:
+            print(e)
+            
         
-        if user.domain.name == "HR" or user.is_staff:
-            return True
+        try:
+            if user.domain.name == "HR" or user.is_staff or user.domain.name=="MD":
+            
 
-        
+                return True
 
-        
+        except Exception as e:
+            print(e)
 
+            
 
-
-# Create your views here.
 
 class users_api(APIView):
     permission_classes = [AccessHrAndAdmin]
@@ -73,9 +80,15 @@ class users_api(APIView):
     def patch(self, request):
         data = request.data 
         obj = User.objects.get(id=data.get('id'))
+        data = request.data 
+        user = request.user
+
+        context = {
+            "user": user
+        }
         
         
-        serializer = UserSerializer(obj, data=data, partial=True)
+        serializer = UserSerializer(obj, data=data, partial=True, context = context)
         if serializer.is_valid():
             serializer.save()
             return Response({

@@ -16,10 +16,11 @@ class PositionSerializer(serializers.ModelSerializer):
 
 
 class UserSerializer(serializers.ModelSerializer):
+    # domain = serializers.StringRelatedField(many=True, read_only = True)
     
     class Meta:
         model = User
-        fields = "__all__"
+        fields = ["username", "phone", "email", "position","domain", "address",  "password"]
 
     def create(self, validated_data):
         validated_data['password'] = make_password(validated_data['password'])
@@ -27,9 +28,9 @@ class UserSerializer(serializers.ModelSerializer):
 
     def validate(self, data):
         user = self.context.get("user")
-      
+        print(user)
         obj = User.objects.get(username=user)
-        print(data.get("domain").name)
+       
         try:
             if (obj.domain.name=="HR") and data.get("domain").name =="MD":
                 raise serializers.ValidationError("hr not create md")
@@ -54,4 +55,4 @@ class UserSerializer(serializers.ModelSerializer):
         if (len(phone)>10 or len(phone)<10):
             raise serializers.ValidationError("please enter 10 digit number ")
 
-        return data
+        return data 

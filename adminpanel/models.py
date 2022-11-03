@@ -23,6 +23,7 @@ class User(AbstractUser):
     phone = models.CharField(max_length = 200)
     address = models.CharField(max_length = 200)
     is_delete = models.BooleanField(default=False)
+    
 
   
 

@@ -1,8 +1,10 @@
 from rest_framework import serializers
 from .models import *
+from adminpanel.serializers import UserSerializer
 
 class InterviewSerializer(serializers.ModelSerializer):
     class Meta:
+        interviewrs = UserSerializer(many = True, read_only = True)
         model = Interview
 
         fields = "__all__"
@@ -10,8 +12,7 @@ class InterviewSerializer(serializers.ModelSerializer):
     def validate(self, data):
 
         dt = str(data.get('datetime'))
-        print(dt)
-      
+       
         list1 = dt.split(" ")
         # print(list1[1])
         for obj in Interview.objects.all():
@@ -38,6 +39,7 @@ class MeetingSerializer(serializers.ModelSerializer):
             if(str(obj.date_time.date()) == list1[0]):
                 if(int(obj.date_time.hour) == int(list1[1][0:2])):
                     raise serializers.ValidationError({"error": "this time is alread booked"})
+
 
 
         return data

@@ -13,6 +13,7 @@ class Interview(models.Model):
     datetime = models.DateTimeField(auto_now_add=False, auto_now=False)
     interviewers = models.ManyToManyField(User)
     is_delete = models.BooleanField(default=False)
+    # cv = models.ImageField(upload_to = "static/images", null=Trure, blank= Tur)
 
     
 
