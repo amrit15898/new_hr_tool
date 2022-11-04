@@ -3,10 +3,18 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from .models import *
 from .serializers import *
+from rest_framework_simplejwt.authentication import JWTAuthentication
+from rest_framework.permissions import IsAuthenticated
+from rest_framework_simplejwt.tokens import RefreshToken
+
 
 
 # Create your views here.
 class IntervieApi(APIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
+
+
     def get(self, request):
         objs = Interview.objects.filter(is_delete=False)
         serializer = InterviewSerializer(objs, many=True)
@@ -25,7 +33,7 @@ class IntervieApi(APIView):
             serializer.save()
             return Response({
                 "status": 200,
-                "message": "data fetched",
+                "message": "data added",
                 "data": request.data
             })
 
@@ -37,7 +45,13 @@ class IntervieApi(APIView):
 
     def patch(self, request):
         data = request.data 
-        obj = Interview.objects.get(id=data.get('id'))
+        try:
+            obj = Interview.objects.get(id=data.get('id'))
+        
+        except Interview.DoesNotExist:
+            return Response({
+                "message": "id not exists"
+            })
         serializer = InterviewSerializer(obj, data = data, partial=True)
 
         if serializer.is_valid():

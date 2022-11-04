@@ -9,7 +9,8 @@ from adminpanel.models import *
 class Interview(models.Model):
     name = models.CharField(max_length = 200)
     domain = models.ForeignKey(Domain, on_delete = models.PROTECT)
-    position = models.ForeignKey(Position, on_delete=models.PROTECT)
+   
+   
     datetime = models.DateTimeField(auto_now_add=False, auto_now=False)
     interviewers = models.ManyToManyField(User)
     is_delete = models.BooleanField(default=False)

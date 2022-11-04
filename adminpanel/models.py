@@ -9,17 +9,28 @@ class Domain(models.Model):
     def __str__(self) -> str:
         return self.name
 
-class Position(models.Model):
-    name = models.CharField(max_length = 200)
+role = (
+    ("Admin", "Admin"),
+    ("HR", "HR"), 
+    ("MD", "MD"),
+    ("TLeader", "TLeader"),
+    ("Employee", "Employee"),
+    ("Intern", "Intern")
 
+)
 
-    def __str__(self) -> str:
-        return self.name
+positions = (
+    ("Seniour", "Seniour"),
+    ("Junior", "Junior"),
+    ("Intern", "Intern")
 
+)
 
 class User(AbstractUser):
     domain = models.ForeignKey(Domain, on_delete = models.CASCADE, null=True)
-    position = models.ForeignKey(Position, on_delete = models.CASCADE, null=True)
+    role = models.CharField(max_length=20, choices = role)
+    position = models.CharField(max_length=20, choices=positions)
+
     phone = models.CharField(max_length = 200)
     address = models.CharField(max_length = 200)
     is_delete = models.BooleanField(default=False)

@@ -3,32 +3,32 @@ from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from .serializers import *
-from rest_framework.permissions import IsAuthenticated , IsAdminUser, BasePermission
-
-class AccessHrAndAdmin(BasePermission):
-    def has_permission(self, request, view):
-        now_user = request.user
-        # print(now_user.domain)
-        try:
-            user = User.objects.get(username=now_user)
-        except Exception as e:
-            print(e)
+from rest_framework_simplejwt.authentication import JWTAuthentication
+from rest_framework.permissions import IsAuthenticated
+from rest_framework_simplejwt.tokens import RefreshToken
+# class AccessHrAndAdmin(BasePermission):
+#     def has_permission(self, request, view):
+#         now_user = request.user
+#         # print(now_user.domain)
+#         try:
+#             user = User.objects.get(username=now_user)
+#         except Exception as e:
+#             print(e)
             
         
-        try:
-            if user.domain.name == "HR" or user.is_staff or user.domain.name=="MD":
+      
+#         if user.domain.name == "HR" or user.is_staff or user.domain.name=="MD":
             
 
-                return True
+#             return True
 
-        except Exception as e:
-            print(e)
-
+        
             
 
 
-class users_api(APIView):
-    permission_classes = [AccessHrAndAdmin]
+class UserApi(APIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
 
     
 
@@ -54,11 +54,17 @@ class users_api(APIView):
 
         
         serializer = UserSerializer(data = data, context = context)
+
         if serializer.is_valid():
             serializer.save()
+            user = User.objects.get(username=serializer.data["username"])
+            refresh = RefreshToken.for_user(user)
+
             return Response({
                 "status": 200, 
-                "data": "data saved"
+                "data": "data saved",
+                "refresh": str(refresh),
+                "access": str(refresh.access_token)
 
             })
 
@@ -79,13 +85,24 @@ class users_api(APIView):
 
     def patch(self, request):
         data = request.data 
-        obj = User.objects.get(id=data.get('id'))
+        try:
+
+            obj = User.objects.get(id=data.get('id'))
+
+        except User.DoesNotExist:
+            return Response(
+                {
+                    "message": "id required"
+                }
+            )
         data = request.data 
         user = request.user
 
         context = {
             "user": user
         }
+
+
         
         
         serializer = UserSerializer(obj, data=data, partial=True, context = context)

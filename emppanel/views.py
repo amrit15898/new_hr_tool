@@ -5,10 +5,14 @@ from rest_framework.response import Response
 from .models import *
 from adminpanel.models import *
 from adminpanel.serializers import *
-from rest_framework.permissions import IsAuthenticated , IsAdminUser, BasePermission
+from rest_framework_simplejwt.authentication import JWTAuthentication
+from rest_framework.permissions import IsAuthenticated
+from rest_framework_simplejwt.tokens import RefreshToken
 
 class NormalUserApi(APIView):
+    authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated]
+
     def get(self, request):
         now_user = request.user
         
@@ -41,7 +45,7 @@ class NormalUserApi(APIView):
             return Response({
                 "message": "id does not exit"
             })
-        serializer = UserSerializer(obj, data = data, context=context)
+        serializer = UserSerializer(obj, data = data, context=context, partial=True)
         if serializer.is_valid():
             serializer.save()
             return Response({

@@ -4,7 +4,7 @@ from adminpanel.serializers import UserSerializer
 
 class InterviewSerializer(serializers.ModelSerializer):
     class Meta:
-        interviewrs = UserSerializer(many = True, read_only = True)
+        # interviewrs = UserSerializer(many = True, read_only = True)
         model = Interview
 
         fields = "__all__"
@@ -14,15 +14,15 @@ class InterviewSerializer(serializers.ModelSerializer):
         dt = str(data.get('datetime'))
        
         list1 = dt.split(" ")
-        # print(list1[1])
+
         for obj in Interview.objects.all():
             if(str(obj.datetime.date()) == list1[0]):
 
                 if(int(obj.datetime.hour) == int(list1[1][0:2])):
-                    raise serializers.ValidationError({"error": "this time is alread booked set different time"})
+                    raise serializers.ValidationError({"error": "this time is already booked set different time"})
         
 
-        return data
+        return data                                            
 
 
 class MeetingSerializer(serializers.ModelSerializer):

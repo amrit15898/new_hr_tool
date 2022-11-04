@@ -9,18 +9,12 @@ class DomainSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
-class PositionSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Position
-        fields = "__all__"
-
-
 class UserSerializer(serializers.ModelSerializer):
     # domain = serializers.StringRelatedField(many=True, read_only = True)
     
     class Meta:
         model = User
-        fields = ["username", "phone", "email", "position","domain", "address",  "password"]
+        fields = ["id", "username", "phone", "email", "position","domain", "role" , "address",  "password"]
 
     def create(self, validated_data):
         validated_data['password'] = make_password(validated_data['password'])
@@ -30,13 +24,11 @@ class UserSerializer(serializers.ModelSerializer):
         user = self.context.get("user")
         print(user)
         obj = User.objects.get(username=user)
+    
        
-        try:
-            if (obj.domain.name=="HR") and data.get("domain").name =="MD":
-                raise serializers.ValidationError("hr not create md")
-
-        except Exception as e:
-            raise serializers.ValidationError("role not find")
+  
+        if obj.role =="HR" and data["role"] == "MD":
+            raise serializers.ValidationError("Hr not create md")
 
 
         email = User.objects.filter(email = data.get('email'))
@@ -52,7 +44,8 @@ class UserSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("phone number already registerd try with another number")
 
 
-        if (len(phone)>10 or len(phone)<10):
-            raise serializers.ValidationError("please enter 10 digit number ")
+        if data.get('phone'):
+            if (len(phone)>10 or len(phone)<10):
+                raise serializers.ValidationError("please enter 10 digit number ")
 
         return data 
