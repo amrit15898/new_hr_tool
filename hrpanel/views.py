@@ -5,100 +5,107 @@ from .models import *
 from .serializers import *
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.viewsets import ModelViewSet
 from rest_framework_simplejwt.tokens import RefreshToken
 
 
-
+class InterviewApi(ModelViewSet):
+    queryset = Interview.objects.all()
+    serializer_class = InterviewSerializer
+    filterset_fields = ['result']
+    print(filterset_fields)
+    
+    
 # Create your views here.
-class IntervieApi(APIView):
-    authentication_classes = [JWTAuthentication]
-    permission_classes = [IsAuthenticated]
+# class IntervieApi(APIView):
+#     authentication_classes = [JWTAuthentication]
+#     permission_classes = [IsAuthenticated]
 
 
-    def get(self, request):
-        objs = Interview.objects.filter(is_delete=False)
-        serializer = InterviewSerializer(objs, many=True)
+#     def get(self, request):
+#         objs = Interview.objects.filter(is_delete=False)
+#         serializer = InterviewSerializer(objs, many=True)
 
-        return Response({
-            "status": True, 
-            "data": serializer.data
-        })
+#         return Response({
+#             "status": True, 
+#             "data": serializer.data
+#         })
 
-    def post(self, request):
-        data = request.data
-        print(data)
+#     def post(self, request):
+#         data = request.data
+#         print(data)
        
-        serializer = InterviewSerializer(data=data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response({
-                "status": 200,
-                "message": "data added",
-                "data": request.data
-            })
+#         serializer = InterviewSerializer(data=data)
+#         if serializer.is_valid():
+#             serializer.save()
+#             return Response({
+#                 "status": 200,
+#                 "message": "data added",
+#                 "data": request.data
+#             })
 
-        return Response({
-            "status": False, 
-            "message": "somethign went wrong",
-            "errors": serializer.errors
-        })
+#         return Response({
+#             "status": False, 
+#             "message": "somethign went wrong",
+#             "errors": serializer.errors
+#         })
 
-    def patch(self, request):
-        data = request.data 
-        try:
-            obj = Interview.objects.get(id=data.get('id'))
+#     def patch(self, request):
+#         data = request.data 
+#         try:
+#             obj = Interview.objects.get(id=data.get('id'))
         
-        except Interview.DoesNotExist:
-            return Response({
-                "message": "id not exists"
-            })
-        serializer = InterviewSerializer(obj, data = data, partial=True)
+#         except Interview.DoesNotExist:
+#             return Response({
+#                 "message": "id not exists"
+#             })
+#         serializer = InterviewSerializer(obj, data = data, partial=True)
 
-        if serializer.is_valid():
-            serializer.save()
-            return Response({
-                "message": "data sucessfully updated",
-                "data": serializer.data
+#         if serializer.is_valid():
+#             serializer.save()
+#             return Response({
+#                 "message": "data sucessfully updated",
+#                 "data": serializer.data
 
-            })
+#             })
 
-        return Response({
-            "status": False, 
-            "message": serializer.errors 
-        })
+#         return Response({
+#             "status": False, 
+#             "message": serializer.errors 
+#         })
 
-    def put(self, request):
-        data = request.data 
+#     def put(self, request):
+#         data = request.data 
         
-        obj = Interview.objects.get(id=data.get('id'))
+#         obj = Interview.objects.get(id=data.get('id'))
         
-        serializer = InterviewSerializer(obj, data = data)
+#         serializer = InterviewSerializer(obj, data = data)
 
-        if serializer.is_valid():
-            serializer.save()
-            return Response({
-                "message": "data sucessfully updated",
-                "data": serializer.data
+#         if serializer.is_valid():
+#             serializer.save()
+#             return Response({
+#                 "message": "data sucessfully updated",
+#                 "data": serializer.data
 
-            })
+#             })
 
-        return Response({
-            "status": 200,
-            "message": "something went wrong",
-            "message": serializer.errors
-        })
+#         return Response({
+#             "status": 200,
+#             "message": "something went wrong",
+#             "message": serializer.errors
+#         })
 
-    def delete(self, request):
-        data = request.data
-        obj = Interview.objects.get(id=data.get('id'))
-        obj.is_delete = True
-        obj.save()
+#     def delete(self, request):
+#         data = request.data
+#         obj = Interview.objects.get(id=data.get('id'))
+#         obj.is_delete = True
+#         obj.save()
 
-        return Response({
-            "status": True , 
-            "message": "data sucessfully deleted"
+#         return Response({
+#             "status": True , 
+#             "message": "data sucessfully deleted"
 
-        })
+#         })
 
     
 

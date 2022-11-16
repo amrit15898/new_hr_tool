@@ -10,10 +10,24 @@ class InterviewSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
     def validate(self, data):
+        
+        email = data.get('email')
+        obj = Interview.objects.filter(email=email).first()
+        
+        if obj:
+            print(obj.name)
+            print(obj.attempt)
+            data.update({"attempt" : obj.attempt +1})
+            print(data)
 
+        else:
+            data.update({"attempt": 1})
+        
+        
         dt = str(data.get('datetime'))
        
         list1 = dt.split(" ")
+        
 
         for obj in Interview.objects.all():
             if(str(obj.datetime.date()) == list1[0]):

@@ -2,13 +2,8 @@ from email.policy import default
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 # Create your models here.
-class Domain(models.Model):
-    name = models.CharField(max_length = 200)
-
-
-    def __str__(self) -> str:
-        return self.name
-
+domain = (("Python Develper", "Python Developer"),
+          ("Php Developer", "Php Developer"))
 role = (
     ("Admin", "Admin"),
     ("HR", "HR"), 
@@ -27,7 +22,7 @@ positions = (
 )
 
 class User(AbstractUser):
-    domain = models.ForeignKey(Domain, on_delete = models.CASCADE, null=True)
+    domain = models.CharField(max_length=200, choices = domain,null=True)
     role = models.CharField(max_length=20, choices = role)
     position = models.CharField(max_length=20, choices=positions)
 
